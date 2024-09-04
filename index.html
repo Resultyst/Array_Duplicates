@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remove Duplicates from Array</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .array-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .element {
+            padding: 10px 15px;
+            border: 2px solid #4a90e2;
+            border-radius: 5px;
+            background-color: #e8f1fd;
+            color: #4a90e2;
+            font-weight: bold;
+            transition: background-color 0.3s, transform 0.3s ease;
+        }
+
+        .element.highlight {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .element.moved {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            background-color: #f1f1f1;
+            padding: 10px;
+            border-left: 5px solid #4a90e2;
+            text-align: left;
+        }
+
+        input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 50%;
+            margin: 5px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #4a90e2;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #357ab8;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Remove Duplicates from Array</h2>
+    <p>Enter a list of numbers separated by commas (e.g., 1,2,1,4,2,3,3,3):</p>
+    <input type="text" id="arrayInput" placeholder="Enter array">
+    <button onclick="startRemoval()">Remove Duplicates</button>
+
+    <div class="array-container" id="arrayDisplay"></div>
+
+    <div class="explanation" id="explanation">
+        <strong>Explanation:</strong>
+        <p>Click "Remove Duplicates" to see the sorting and step-by-step removal of duplicates from the array.</p>
+    </div>
+</div>
+
+<script>
+    function parseInputValues(input) {
+        return input.split(',').map(val => parseInt(val.trim())).filter(val => !isNaN(val));
+    }
+
+    function createElement(value) {
+        const element = document.createElement('div');
+        element.className = 'element';
+        element.innerText = value;
+        return element;
+    }
+
+    function displayArray(container, values, highlightIndex = -1, movedIndex = -1) {
+        container.innerHTML = '';
+        values.forEach((value, index) => {
+            const element = createElement(value);
+            if (index === highlightIndex) element.classList.add('highlight');
+            if (index === movedIndex) element.classList.add('moved');
+            container.appendChild(element);
+        });
+    }
+
+    function setExplanation(text) {
+        const explanation = document.getElementById('explanation');
+        explanation.innerHTML = `<strong>Explanation:</strong><p>${text}</p>`;
+    }
+
+    function startRemoval() {
+        let nums = parseInputValues(document.getElementById('arrayInput').value);
+        const arrayContainer = document.getElementById('arrayDisplay');
+
+        if (nums.length === 0) {
+            setExplanation('Please enter a valid array.');
+            return;
+        }
+
+        // Step 1: Sort the array
+        nums.sort((a, b) => a - b);
+        setExplanation('Array sorted: [' + nums.join(', ') + '].');
+
+        displayArray(arrayContainer, nums);
+
+        // Step 2: Remove duplicates from the sorted array
+        let j = 1;
+
+        function removeStep(i) {
+            if (i >= nums.length) {
+                setExplanation(`Process complete! The array without duplicates is now [${nums.slice(0, j).join(', ')}] with length ${j}.`);
+                return;
+            }
+
+            if (nums[i] !== nums[i - 1]) {
+                nums[j] = nums[i];
+                displayArray(arrayContainer, nums, i, j);
+                setExplanation(`Found new unique element: ${nums[i]}. Moving it to position ${j}.`);
+                j++;
+            } else {
+                displayArray(arrayContainer, nums, i);
+                setExplanation(`Duplicate element ${nums[i]} found. Skipping.`);
+            }
+
+            setTimeout(() => removeStep(i + 1), 1000);
+        }
+
+        setExplanation('Starting the process to remove duplicates from the sorted array...');
+        setTimeout(() => removeStep(1), 1000);
+    }
+</script>
+
+</body>
+</html>
